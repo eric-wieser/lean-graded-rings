@@ -2,6 +2,8 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
+
+Taken from: https://github.com/leanprover-community/mathlib/pull/10255
 -/
 
 import linear_algebra.pi_tensor_product
@@ -244,11 +246,11 @@ instance gsemiring : direct_sum.gsemiring (λ i, ⨂[R]^i M) :=
   add_mul := λ i j a₁ a₂ b, linear_map.map_add₂ _ _ _ _,
   nat_cast := λ n, (tensor_power.algebra_map : R ≃ₗ[R] ⨂[R]^0 M) n,
   nat_cast_zero := by simp,
-  nat_cast_succ := λ n, by { simp [tensor_power.algebra_map], congr, },
+  nat_cast_succ := λ n, by rw [nat.cast_add, nat.cast_one, map_add,
+    algebra_map_eq_smul_one (1 : R), one_smul],
   ..tensor_power.gmonoid }
 
 example : semiring (⨁ n : ℕ, ⨂[R]^n M) := by apply_instance
-
 
 instance galgebra : direct_sum.galgebra R (λ i, ⨂[R]^i M) :=
 { to_fun := (tensor_power.algebra_map : R ≃ₗ[R] ⨂[R]^0 M) .to_linear_map.to_add_monoid_hom,
