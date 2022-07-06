@@ -59,12 +59,15 @@ do
   infos ← io.run_tactic $ do
   { e ← get_env,
     e.get_decls.mmap process_decl },
+  io.put_str_ln "\\makeatletter",
+  io.put_str_ln "\\@namedef{lean-ref-github}{https://github.com/eric-wieser/lean-graded-rings}",
+  sha ← io.cmd { cmd := "git", args := ["rev-parse", "HEAD"] },
+  io.put_str_ln (format!"\\@namedef{{lean-ref-sha}}{{{sha}}}").to_string,
   infos.mmap_io $ λ di : option decl_info, do
   { some di ← pure di | pure (),
     (some p, file) ← project_file_split di.filename | pure (),
     tt ← pure ("lean-graded-rings".is_suffix_of p) | pure (),
-    io.put_str (format!"\\@namedef{{lean-ref-file@{di.name}}}{{{file}}}" ++
-                format!"\\@namedef{{lean-ref-line@{di.name}}}{{{di.line}}}\n").to_string
+    io.put_str_ln (format!"\\@namedef{{lean-ref-file@{di.name}}}{{{file}}}" ++
+                  format!"\\@namedef{{lean-ref-line@{di.name}}}{{{di.line}}}").to_string
     },
-  pure ()
-  
+  io.put_str_ln "\\makeatother"

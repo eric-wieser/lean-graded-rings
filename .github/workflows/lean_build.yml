@@ -49,6 +49,10 @@ jobs:
       run: |
         leanproject mk-all
         lean --run export.lean > lean-decl-info.tex
+        echo '`lean-decl-info.tex` contains:' >> $GITHUB_STEP_SUMMARY
+        echo '```latex' >> $GITHUB_STEP_SUMMARY
+        cat lean-decl-info.tex >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
 
     - uses: actions/upload-artifact@v3
       with:
