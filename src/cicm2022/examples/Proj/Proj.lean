@@ -3,11 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import algebraic_geometry.projective_spectrum.structure_sheaf
 import algebraic_geometry.Spec
 import algebraic_geometry.Scheme
-import ring_theory.graded_algebra.radical
-import ..Proj.lemmas
+
+import .radical
+import .lemmas
+import .structure_sheaf
 
 /-!
 # Proj as a scheme
