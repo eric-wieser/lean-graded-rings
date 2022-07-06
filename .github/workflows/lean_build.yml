@@ -43,7 +43,7 @@ jobs:
 
     - name: Build
       run: |
-        lean --json --make src | python3 _target/mathlib/scripts/detect_errors.py
+        lean --json --make src | python3 _target/deps/mathlib/scripts/detect_errors.py
 
     - name: Export symbols
       run: |
