@@ -16,11 +16,15 @@ do
   ff ← d.in_current_file | return none,
   e ← get_env,
   let decl_name := d.to_name,
-  ff ← pure (decl_name.is_internal ∨ d.is_auto_generated e : bool) | return none,
+  -- allow linking to private names
+  let (internal, short_name) := if (`_private).is_prefix_of decl_name
+                    then (ff, decl_name.update_prefix decl_name.get_prefix.get_prefix)
+                    else (decl_name.is_internal ∨ d.is_auto_generated e, decl_name),
+  ff ← pure internal | return none,
   some filename ← return (e.decl_olean decl_name) | return none,
   let parts := filename.split (= '/'),
   some ⟨line, _⟩ ← return (e.decl_pos decl_name) | return none,
-  return $ some ⟨decl_name, filename, line⟩
+  return $ some ⟨short_name, filename, line⟩
 
 def path_split (path : string) : option string × string :=
 match (path.split (= '/')).reverse with
