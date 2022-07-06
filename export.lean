@@ -87,7 +87,7 @@ do
     e.get_decls.mmap (process_decl e) },
   io.put_str_ln "\\makeatletter",
   io.put_str_ln "",
-  io.put_str_ln "\\newcommand{@leandef}{4}{%",
+  io.put_str_ln "\\newcommand\\@leandef[4]{%",
   io.put_str_ln "\\@namedef{lean-ref-proj@#1}{#2}%",
   io.put_str_ln "\\@namedef{lean-ref-file@#1}{#3}%",
   io.put_str_ln "\\@namedef{lean-ref-line@#1}{#4}%",
