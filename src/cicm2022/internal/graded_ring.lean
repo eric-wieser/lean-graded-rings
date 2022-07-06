@@ -5,11 +5,12 @@ Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
 
 https://github.com/leanprover-community/mathlib/blob/master/src/algebra/graded_algebra/basic.lean
 -/
-import algebra.direct_sum.algebra
-import algebra.direct_sum.decomposition
-import algebra.direct_sum.internal
-import algebra.direct_sum.ring
 import group_theory.subgroup.basic
+
+import cicm2022.internal.decomposition
+import cicm2022.internal.internal
+import cicm2022.external.graded_ring
+import cicm2022.external.graded_algebra
 
 /-!
 # Internally-graded rings and algebras
