@@ -1,0 +1,11 @@
+# Proj construction
+
+## Current state in mathlib
+
+The content of this folder is not entirely in mathlib yet. `homogeneous_ideal.lean` where homogeneous ideals and basic properties thereof are defined and proved, `homogeneous_localization.lean` where homogeneous localization (the subring where numerator and denominator have the same degree) is defined, `topology.lean` where the Zarisky topology of $\mathrm{Proj}$ is defined and `structure_sheaf` where $\mathcal{O}\_{\mathrm{Proj}}$ is defined are already in mathlib and have been copied here verbatim. However, `Proj.lean` is not fully in mathlib yet, only the continuous map $\mathrm{Proj}A\mid\_{D(f)}\to\mathrm{Spec}A\_f^0$ is in mathlib.
+
+## Use of graded algebra API
+
+$\mathrm{Proj}$ is a construction evolved from homogeneous prime ideal, so naturally a lot of things need to be proven for its homogeneity and primeness. In `radical.lean`, we proved a useful criterion that a homogeneous ideal ${I}$ is prime iff for all homogeneous elements $a,b\in I$, $ab\in I$ implies either $a\in I$ or $b\in I$. The way we defined graded algebra gave us a easy way to any element as sum of its projections and the desired result can be obtained from there. Formalizing the Zariski topology involves manipulating homogeneous ideals which in turn is about reasoning degrees of elements. The currently formalization of graded algebra makes proving properties of homogeneous ideals a word-by-word translation of traditional maths proofs without any techinical difficulty. Other objects involved in this formalization like homogeneous localizations $A\_\mathfrak p^0$ and $A^0_f$ are again easily and naturally defined by using the current formalization of graded algebra. 
+
+As mentioned in the paper, we believe that stress testing is how we can tell if our design choice is sensible. Thus, by formalizing $\mathrm{Proj}$, we conclude that current design choice is enough to define a set of well-functioning and natural-to-use APIs for homogeneous objects and makes reasoning about degrees of elements effortless.

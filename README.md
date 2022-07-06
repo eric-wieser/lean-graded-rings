@@ -16,6 +16,6 @@ This repository contains a `.gitpod.yml` file which allows it be explored with a
 
 ## Contributors
 
-Eric Wieser ([@eric-wieser](https://github.com/eric-wieser), Jujian Zhang ([@jjaassoonn](https://github.com/jjaassoonn))
+Eric Wieser ([@eric-wieser](https://github.com/eric-wieser)), Jujian Zhang ([@jjaassoonn](https://github.com/jjaassoonn))
 
 With thanks to Kevin Buzzard ([@kbuzzard](https://github.com/kbuzzard)) for some initial exploration.
