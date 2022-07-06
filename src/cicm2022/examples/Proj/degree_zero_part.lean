@@ -47,6 +47,8 @@ def degree_zero_part {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) : subring (away f)
 
 end
 
+local notation `A⁰_` f_deg := degree_zero_part f_deg
+
 section
 
 variable {𝒜}
