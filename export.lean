@@ -12,7 +12,7 @@ meta structure decl_info :=
 (line : ℕ)
 
 meta def process_decl (d : declaration) : tactic (option decl_info) :=
-do 
+do
   ff ← d.in_current_file | return none,
   e ← get_env,
   let decl_name := d.to_name,

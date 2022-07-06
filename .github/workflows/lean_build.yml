@@ -23,12 +23,12 @@ jobs:
         curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- --default-toolchain none -y
         ~/.elan/bin/lean --version
         echo "$HOME/.elan/bin" >> $GITHUB_PATH
-  
+
     - name: install Python
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-  
+
     - name: Install leanproject
       run: |
         python3 -m pip install --user pipx
@@ -58,4 +58,3 @@ jobs:
       with:
         name: lean-decl-info
         path: lean-decl-info.tex
-    
