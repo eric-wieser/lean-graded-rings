@@ -5,7 +5,7 @@ Authors: Eric Wieser
 
 From: https://github.com/leanprover-community/mathlib/pull/10255
 -/
-import cicm2022.external.graded_monoid
+import cicm2022.graded_monoid
 import data.fin.vec_notation
 
 /-! # Tuples `fin na → α` form a graded ring under append -/

@@ -9,7 +9,7 @@ import group_theory.subgroup.basic
 import algebra.direct_sum.basic
 import algebra.big_operators.pi
 
-import cicm2022.external.graded_monoid
+import cicm2022.graded_monoid
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`

@@ -2,10 +2,11 @@ import algebra.group.basic
 
 variables {ι : Type*} {A : ι → Type*}
 
--- uncomment this to get an error
-/-
+
 class «fails».g_semigroup [add_semigroup ι] :=
 (mul {i j} : A i → A j → A (i + j))
+-- uncomment this to get an error
+/-
 (mul_assoc {i j k} (x : A i) (y : A j) (z : A k) :
   mul (mul x y) z = mul x (mul y z))
 -/
