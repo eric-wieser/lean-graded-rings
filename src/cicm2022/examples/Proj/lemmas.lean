@@ -58,16 +58,11 @@ lemma graded_algebra.proj_hom_mul (a b : A) (i j : ℕ) (a_mem : a ∈ 𝒜 i)
   graded_algebra.proj 𝒜 (i + j) (a * b) = a * graded_algebra.proj 𝒜 j b :=
 begin
   classical,
-  -- haveI : Π (i : ℕ) (x : 𝒜 i), decidable (x ≠ 0) := λ _ _, classical.dec _,
   by_cases INEQ : a = 0,
   rw [INEQ, zero_mul, zero_mul, linear_map.map_zero],
 
   rw [graded_algebra.proj_apply, show direct_sum.decompose 𝒜 (a * b) (i + j) = direct_sum.decompose_alg_equiv _ _ _, from rfl,
     alg_equiv.map_mul, direct_sum.coe_mul_apply],
-  -- squeeze_simp,
-  -- simp only [direct_sum.decompose_alg_equiv_apply, graded_algebra.proj_apply], 
-  -- [alg_equiv.map_mul, direct_sum.coe_mul_apply_submodule 𝒜,
-  --   ←graded_algebra.support, ←graded_algebra.support],
 
   have set_eq1 : (direct_sum.decompose_alg_equiv 𝒜 a).support = {i},
     { ext1, split; intros hx,
@@ -171,3 +166,32 @@ lemma mul_val (U : opens (prime_spectrum.Top R)) (x y : sections_subring R (op U
 
 
 end algebraic_geometry.structure_sheaf
+
+
+section clear_denominator
+
+variables {A : Type*} [comm_ring A]
+
+open localization
+
+-- this is a wrapper around `is_localization.exist_integer_multiples_of_finset`, the main purpose
+-- of this lemma is to make the degree of denominator explicit.
+lemma clear_denominator {f : A} (s : finset (away f)) :
+  ∃ (n : ℕ), ∀ (x : away f), x ∈ s →
+    x * (mk (f^n) 1 : away f) ∈
+    (λ y, (mk y 1 : localization.away f)) '' set.univ :=
+begin
+  rcases is_localization.exist_integer_multiples_of_finset (submonoid.powers f) s with
+    ⟨⟨_, ⟨n, rfl⟩⟩, h⟩,
+  refine ⟨n, λ x hx, _⟩,
+  rcases h x hx with ⟨a, eq1⟩,
+  induction x using localization.induction_on with data,
+  rcases data with ⟨x, y⟩,
+  dsimp at *,
+  change mk a 1 = f^n • _ at eq1,
+  rw [algebra.smul_def, show algebra_map A (localization.away f) _ = mk (f^_) 1, from rfl, mk_mul, one_mul] at eq1,
+  rw [mk_mul, mul_one, mul_comm, ← eq1],
+  refine ⟨a, trivial, rfl⟩,
+end
+
+end clear_denominator
