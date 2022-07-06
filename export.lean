@@ -62,12 +62,12 @@ do
   io.put_str_ln "\\makeatletter",
   io.put_str_ln "\\@namedef{lean-ref-github}{https://github.com/eric-wieser/lean-graded-rings}",
   sha ← io.cmd { cmd := "git", args := ["rev-parse", "HEAD"] },
+  let sha := sha.pop_back,  -- remove trailing newline
   io.put_str_ln (format!"\\@namedef{{lean-ref-sha}}{{{sha}}}").to_string,
   infos.mmap_io $ λ di : option decl_info, do
   { some di ← pure di | pure (),
     (some p, file) ← project_file_split di.filename | pure (),
     tt ← pure ("lean-graded-rings".is_suffix_of p) | pure (),
     io.put_str_ln (format!"\\@namedef{{lean-ref-file@{di.name}}}{{{file}}}" ++
-                  format!"\\@namedef{{lean-ref-line@{di.name}}}{{{di.line}}}").to_string
-    },
+                   format!"\\@namedef{{lean-ref-line@{di.name}}}{{{di.line}}}").to_string },
   io.put_str_ln "\\makeatother"
