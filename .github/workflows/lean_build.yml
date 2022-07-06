@@ -36,14 +36,25 @@ jobs:
         source ~/.profile
         pipx install mathlibtools
 
+    - name: Set up olean cache
+      uses: actions/cache@v3
+      with:
+        path: _cache
+        key: oleans
+
     - name: Configure
       run: |
         leanpkg configure
         leanproject get-mathlib-cache
+        leanproject get-cache --fallback=download-first || true
 
     - name: Build
       run: |
         lean --json --make src | python3 _target/deps/mathlib/scripts/detect_errors.py
+
+    - name: Save olean cache
+      run: |
+        leanproject mk-cache
 
     - name: Export symbols
       run: |
