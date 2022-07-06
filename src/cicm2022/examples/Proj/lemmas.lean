@@ -1,4 +1,5 @@
 import ring_theory.localization.basic
+import algebraic_geometry.structure_sheaf
 
 import cicm2022.internal.graded_ring
 import .structure_sheaf

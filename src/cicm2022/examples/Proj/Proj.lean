@@ -2790,21 +2790,6 @@ begin
   rw ← ha2,
   exact ha1,
 end
--- -- ((@opens.open_embedding Proj.T (pbo f)).is_open_map.functor.op.obj 
--- --  ((opens.map (Top_component hm f_deg).hom).op.obj V)).unop = h⁻¹ V
--- example (z : Proj.T| (pbo f)) (h: (Top_component hm f_deg).hom z ∈ unop V) : 
---   z.1 ∈ ((@opens.open_embedding Proj.T (pbo f)).is_open_map.functor.op.obj 
---   ((opens.map (Top_component hm f_deg).hom).op.obj V)).unop.1 :=
--- begin
---   refine ⟨_, _, rfl⟩,
---   simp only [functor.op_obj, unop_op, opens.mem_coe],
---   erw opens.map_obj,
---   change _ ∈ _ ⁻¹' _,
---   dsimp only,
---   erw set.mem_preimage,
---   exact h,
---   exact V.unop.2,
--- end
 
 lemma data_prop2 :
   (Proj_iso_Spec_Top_component hm f_deg).hom ⟨y.1, data_prop1 hm f_deg V y⟩ ∈ unop V :=
