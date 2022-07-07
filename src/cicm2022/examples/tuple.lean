@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 
-Taken from: https://github.com/leanprover-community/mathlib/pull/10255
+From: https://github.com/leanprover-community/mathlib/pull/10255
 -/
-import cicm2022.external.graded_monoid
+import cicm2022.graded_monoid
 import data.fin.vec_notation
 
 /-! # Tuples `fin na → α` form a graded ring under append -/

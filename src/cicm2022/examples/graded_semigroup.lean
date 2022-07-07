@@ -2,18 +2,23 @@ import algebra.group.basic
 
 variables {ι : Type*} {A : ι → Type*}
 
--- uncomment this to get an error
-/-
+
 class «fails».g_semigroup [add_semigroup ι] :=
 (mul {i j} : A i → A j → A (i + j))
+-- uncomment this to get an error
+/-
 (mul_assoc {i j k} (x : A i) (y : A j) (z : A k) :
   mul (mul x y) z = mul x (mul y z))
 -/
+class «heq».g_semigroup [add_semigroup ι] :=
+(mul {i j} : A i → A j → A (i + j))
+(mul_assoc {i j k} (x : A i) (y : A j) (z : A k) :
+  mul (mul x y) z == mul x (mul y z))
 
 class «sigma».g_semigroup [add_semigroup ι] :=
 (mul {i j} : A i → A j → A (i + j))
 (mul_assoc {i j k} (x : A i) (y : A j) (z : A k) :
-  mul (mul x y) z == mul x (mul y z))
+  (⟨_, mul (mul x y) z⟩ : Σ i, A i) = ⟨_, mul x (mul y z)⟩)
 
 class «extends».g_semigroup [add_semigroup ι] extends semigroup (Σ i, A i) :=
 (fst_mul {i j} (x : A i) (y : A j) :
