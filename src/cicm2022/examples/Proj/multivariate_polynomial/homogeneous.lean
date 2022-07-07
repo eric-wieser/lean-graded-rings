@@ -8,7 +8,7 @@ import data.fintype.card
 import data.mv_polynomial.variables
 
 import cicm2022.internal.internal
-import cicm2022.external.graded_monoid
+import cicm2022.graded_monoid
 
 /-!
 # Homogeneous polynomials
