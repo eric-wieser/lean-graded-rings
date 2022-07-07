@@ -75,7 +75,7 @@ meta def main : io unit :=
 do
   let project_urls : project_map string := rbmap.from_list
   [ (some "lean-graded-rings", "https://github.com/eric-wieser/lean-graded-rings")
-   --, (some "mathlib", "https://github.com/leanprover-community/mathlib")
+  , (some "mathlib", "https://github.com/leanprover-community/mathlib")
    --, (⊥, "https://github.com/leanprover-community/lean")
     ],
   let project_shas : project_map string := rbmap.from_list [
