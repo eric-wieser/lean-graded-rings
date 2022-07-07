@@ -1,6 +1,3 @@
-import cicm2022.internal.graded_ring
-import cicm2022.internal.internal
-
 import ..multivariate_polynomial.homogeneous
 import ..Proj
 
