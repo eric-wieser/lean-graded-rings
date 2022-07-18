@@ -131,19 +131,6 @@ begin
     exact H },
 end
 
-lemma one_val (U : opens (prime_spectrum.Top R)) :
-  (1 : sections_subring R (op U)).1 = 1 := rfl
-
-lemma zero_val (U : opens (prime_spectrum.Top R)) :
-  (0 : sections_subring R (op U)).1 = 0 := rfl
-
-lemma add_val (U : opens (prime_spectrum.Top R)) (x y : sections_subring R (op U)) :
-  (x + y : sections_subring R (op U)).1 = x.1 + y.1 := rfl
-
-lemma mul_val (U : opens (prime_spectrum.Top R)) (x y : sections_subring R (op U)) :
-  (x * y : sections_subring R (op U)).1 = x.1 * y.1 := rfl
-
-
 end algebraic_geometry.structure_sheaf
 
 

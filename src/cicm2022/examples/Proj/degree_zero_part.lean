@@ -22,12 +22,12 @@ The degree zero part of the localized ring `Aₓ` is the subring of elements of 
 that `a` and `x^n` have the same degree.
 -/
 def degree_zero_part {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) : subring (away f) :=
-{ carrier := { y | ∃ (n : ℕ) (a : 𝒜 (m * n)), y = mk a.1 ⟨f^n, ⟨n, rfl⟩⟩ },
+{ carrier := { y | ∃ (n : ℕ) (a : 𝒜 (m * n)), y = mk a ⟨f^n, ⟨n, rfl⟩⟩ },
   mul_mem' := λ _ _ ⟨n, ⟨a, h⟩⟩ ⟨n', ⟨b, h'⟩⟩, h.symm ▸ h'.symm ▸
     ⟨n+n', ⟨⟨a.1 * b.1, (mul_add m n n').symm ▸ mul_mem a.2 b.2⟩,
     by {rw mk_mul, congr' 1, simp only [pow_add], refl }⟩⟩,
   one_mem' := ⟨0, ⟨1, (mul_zero m).symm ▸ one_mem⟩,
-    by { symmetry, convert ← mk_self 1, simp only [pow_zero], refl, }⟩,
+    by { symmetry, rw [subtype.coe_mk], convert ← mk_self 1, simp only [pow_zero], refl, }⟩,
   add_mem' := λ _ _ ⟨n, ⟨a, h⟩⟩ ⟨n', ⟨b, h'⟩⟩, h.symm ▸ h'.symm ▸
     ⟨n+n', ⟨⟨f ^ n * b.1 + f ^ n' * a.1, (mul_add m n n').symm ▸
       add_mem (mul_mem (by { rw mul_comm, exact set_like.graded_monoid.pow_mem n f_deg }) b.2)
@@ -75,34 +75,8 @@ lemma degree_zero_part.num_mem {f : A} {m : ℕ} {f_deg : f ∈ 𝒜 m} (x : A�
 x.2.some_spec.some.2
 
 lemma degree_zero_part.eq {f : A} {m : ℕ} {f_deg : f ∈ 𝒜 m} (x : A⁰_ f_deg) :
-  x.1 = mk (degree_zero_part.num x) ⟨f^(degree_zero_part.deg x), ⟨_, rfl⟩⟩ :=
+  (x : away f) = mk (degree_zero_part.num x) ⟨f^(degree_zero_part.deg x), ⟨_, rfl⟩⟩ :=
 x.2.some_spec.some_spec
-
-lemma degree_zero_part.mul_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x y : A⁰_ f_deg) :
-  (x * y).1 = x.1 * y.1 := rfl
-
-lemma degree_zero_part.add_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x y : A⁰_ f_deg) :
-  (x + y).1 = x.1 + y.1 := rfl
-
-lemma degree_zero_part.sum_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) {ι : Type*} (s : finset ι) (g : ι → A⁰_ f_deg) :
-  (∑ i in s, g i).val = ∑ i in s, (g i).val :=
-begin
-  haveI : decidable_eq ι := classical.dec_eq _,
-  induction s using finset.induction_on with i s hi ih,
-  { simp },
-  { simp },
-end
-
-lemma degree_zero_part.one_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) :
-  (1 : degree_zero_part f_deg).1 = 1 := rfl
-
-lemma degree_zero_part.zero_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) :
-  (0 : degree_zero_part f_deg).1 = 0 := rfl
-
-lemma degree_zero_part.pow_val {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (x : A⁰_ f_deg) (n : ℕ) :
-  (x ^ n).1 = x.1 ^ n :=
-nat.rec_on n (by rw [pow_zero, degree_zero_part.one_val, pow_zero]) $ λ i ih, 
-by rw [pow_succ, degree_zero_part.mul_val, ih, pow_succ]
 
 end
 

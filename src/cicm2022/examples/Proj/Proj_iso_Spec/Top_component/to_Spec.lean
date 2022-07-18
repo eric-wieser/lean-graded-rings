@@ -58,7 +58,7 @@ ideal.comap (algebra_map (A⁰_ f_deg) (away f))
 
 lemma mem_carrier_iff (z : A⁰_ f_deg) :
   z ∈ carrier f_deg x ↔
-  z.1 ∈ ideal.span (algebra_map A (away f) '' x.1.as_homogeneous_ideal) :=
+  ↑z ∈ ideal.span (algebra_map A (away f) '' x.1.as_homogeneous_ideal) :=
 iff.rfl
 
 lemma mem_carrier.clear_denominator [decidable_eq (away f)]
@@ -66,7 +66,7 @@ lemma mem_carrier.clear_denominator [decidable_eq (away f)]
   ∃ (c : algebra_map A (away f) '' x.1.as_homogeneous_ideal →₀ away f)
     (N : ℕ)
     (acd : Π y ∈ c.support.image c, A),
-    f ^ N • z.1 =
+    f ^ N • ↑z =
     algebra_map A (away f) (∑ i in c.support.attach,
       acd (c i) (finset.mem_image.mpr ⟨i, ⟨i.2, rfl⟩⟩) * classical.some i.1.2) :=
 begin
@@ -100,7 +100,7 @@ begin
   ext z, split; intros hz,
   { rw mem_carrier_iff at hz,
     change z ∈ ideal.span _,
-    have mem1 := z.2,
+    have mem1 := z.prop,
     change ∃ _, _ at mem1,
     obtain ⟨k, ⟨a, a_mem⟩, hk⟩ := mem1,
     erw [hk] at hz,
@@ -108,16 +108,16 @@ begin
     erw [←ideal.submodule_span_eq, finsupp.span_eq_range_total, set.mem_range] at hz,
     obtain ⟨c, eq1⟩ := hz,
     erw [finsupp.total_apply, finsupp.sum] at eq1,
+    dsimp only [subtype.coe_mk] at eq1,
 
     suffices mem1 : a ∈ x.1.as_homogeneous_ideal,
     apply ideal.subset_span,
-    refine ⟨a, mem1, _, a_mem, _⟩,
-    rw subtype.ext_iff_val, dsimp only, rw hk,
+    exact ⟨a, mem1, _, a_mem, subtype.ext hk⟩,
 
-    obtain ⟨N, hN⟩ := clear_denominator (finset.image (λ i, c i * i.1) c.support),
+    obtain ⟨N, hN⟩ := clear_denominator (finset.image (λ i, c i * i) c.support),
     -- N is the common denom
     choose after_clear_denominator hacd using hN,
-    have prop1 : ∀ i, i ∈ c.support → c i * i.1 ∈ (finset.image (λ i, c i * i.1) c.support),
+    have prop1 : ∀ i, i ∈ c.support → c i * i ∈ (finset.image (λ i, c i * i) c.support),
     { intros i hi, rw finset.mem_image, refine ⟨_, hi, rfl⟩, },
     have eq3 := calc (localization.mk a 1 : localization.away f) * localization.mk (f^N) 1
             = localization.mk a ⟨f^k, ⟨_, rfl⟩⟩ * localization.mk (f^k) 1 * localization.mk (f^N) 1
@@ -125,59 +125,59 @@ begin
               congr,
               rw [localization.mk_mul, localization.mk_eq_mk', is_localization.eq],
               use 1,
-              erw [mul_one, mul_one, mul_one, mul_one, ←subtype.val_eq_coe],
+              erw [mul_one, mul_one, mul_one, mul_one, subtype.coe_mk],
             end
         ... = localization.mk (f^k) 1 * localization.mk a ⟨f^k, ⟨_, rfl⟩⟩ * localization.mk (f^N) 1
             : by ring
-        ... = localization.mk (f^k) 1 * localization.mk (f^N) 1 * ∑ i in c.support, c i * i.1
+        ... = localization.mk (f^k) 1 * localization.mk (f^N) 1 * ∑ i in c.support, c i * i
             : begin
               erw eq1, ring,
             end
-        ... = localization.mk (f^k) 1 * (localization.mk (f^N) 1 * ∑ i in c.support, c i * i.1) : by ring
-        ... = localization.mk (f^k) 1 * ∑ i in c.support, (localization.mk (f^N) 1) * (c i * i.1)
+        ... = localization.mk (f^k) 1 * (localization.mk (f^N) 1 * ∑ i in c.support, c i * i) : by ring
+        ... = localization.mk (f^k) 1 * ∑ i in c.support, (localization.mk (f^N) 1) * (c i * i)
             : begin
               congr' 1,
               rw finset.mul_sum,
             end
-        ... = localization.mk (f^k) 1 * ∑ i in c.support.attach, (localization.mk (f^N) 1) * (c i.1 * i.1.1)
+        ... = localization.mk (f^k) 1 * ∑ i in c.support.attach, (localization.mk (f^N) 1) * (c i * i.1.1)
             : begin
               congr' 1,
               symmetry,
               convert finset.sum_attach,
               refl,
             end
-        ... = localization.mk (f^k) 1 * ∑ i in c.support.attach, (localization.mk (after_clear_denominator (c i.1 * i.1.1) (prop1 i.1 i.2)) 1)
+        ... = localization.mk (f^k) 1 * ∑ i in c.support.attach, (localization.mk (after_clear_denominator (c i * i.1.1) (prop1 i i.prop)) 1)
             : begin
               congr' 1,
               rw finset.sum_congr rfl (λ j hj, _),
-              have eq2 := (hacd (c j.1 * j.1.1) (prop1 j.1 j.2)).2,
+              have eq2 := (hacd (c j * j.1.1) (prop1 j.1 j.2)).2,
               dsimp only at eq2,
               erw eq2,
               rw mul_comm,
             end
-        ... = ∑ i in c.support.attach, (localization.mk (f^k) 1) * (localization.mk (after_clear_denominator (c i.1 * i.1.1) (prop1 i.1 i.2)) 1)
+        ... = ∑ i in c.support.attach, (localization.mk (f^k) 1) * (localization.mk (after_clear_denominator (c i * i.1.1) (prop1 i i.prop)) 1)
             : begin
               rw finset.mul_sum,
             end
-        ... = ∑ i in c.support.attach, localization.mk (f^k * (after_clear_denominator (c i.1 * i.1.1) (prop1 i.1 i.2))) 1
+        ... = ∑ i in c.support.attach, localization.mk (f^k * (after_clear_denominator (c i * i.1.1) (prop1 i i.prop))) 1
             : begin
               rw finset.sum_congr rfl (λ j hj, _),
               erw [localization.mk_mul, one_mul],
             end
-        ... = localization.mk (∑ i in c.support.attach, (f^k * (after_clear_denominator (c i.1 * i.1.1) (prop1 i.1 i.2)))) 1
+        ... = localization.mk (∑ i in c.support.attach, (f^k * (after_clear_denominator (c i * i.1.1) (prop1 i i.prop)))) 1
             : begin
               induction c.support.attach using finset.induction_on with y s hy ih,
               rw [finset.sum_empty, finset.sum_empty, localization.mk_zero],
 
               erw [finset.sum_insert hy, finset.sum_insert hy, ih, localization.add_mk, mul_one, one_mul, one_mul, add_comm],
             end,
-        erw [localization.mk_mul, one_mul] at eq3,
-        simp only [localization.mk_eq_mk', is_localization.eq] at eq3,
-        obtain ⟨⟨_, ⟨l, rfl⟩⟩, eq3⟩ := eq3,
-        erw [mul_one, ←subtype.val_eq_coe, mul_one] at eq3,
-        dsimp only at eq3,
+    erw [localization.mk_mul, one_mul] at eq3,
+    simp only [localization.mk_eq_mk', is_localization.eq] at eq3,
+    obtain ⟨⟨_, ⟨l, rfl⟩⟩, eq3⟩ := eq3,
+    erw [mul_one, mul_one] at eq3,
+    dsimp only [subtype.coe_mk] at eq3,
 
-    suffices : (∑ i in c.support.attach, (f^k * (after_clear_denominator (c i.1 * i.1.1) (prop1 i.1 i.2)))) * f^l ∈ x.1.as_homogeneous_ideal,
+    suffices : (∑ i in c.support.attach, (f^k * (after_clear_denominator (c i * i.1.1) (prop1 i i.prop)))) * f^l ∈ x.1.as_homogeneous_ideal,
     erw ←eq3 at this,
     rcases x.1.is_prime.mem_or_mem this with H1 | H3,
     rcases x.1.is_prime.mem_or_mem H1 with H1 | H2,
@@ -224,7 +224,7 @@ begin
             end,
     simp only [localization.mk_eq_mk', is_localization.eq] at eq6,
     obtain ⟨⟨_, ⟨v, rfl⟩⟩, eq6⟩ := eq6,
-    erw [←subtype.val_eq_coe, ←subtype.val_eq_coe, mul_one] at eq6,
+    erw [mul_one] at eq6,
     dsimp only at eq6,
 
     have mem4 : α * g * f ^ N * f ^ v ∈ x.1.as_homogeneous_ideal,
@@ -256,26 +256,17 @@ begin
     erw [←ideal.submodule_span_eq, finsupp.span_eq_range_total, set.mem_range] at hz,
     obtain ⟨c, eq1⟩ := hz,
     erw [finsupp.total_apply, finsupp.sum] at eq1,
+    erw [←eq1, add_submonoid_class.coe_finset_sum],
 
-    erw [←eq1, show (∑ i in c.support, c i * i.1).val = ∑ i in c.support, (c i).1 * i.1.1, begin
-      induction c.support using finset.induction_on with a s ha ih,
-
-      rw [finset.sum_empty, finset.sum_empty],
-      refl,
-
-      erw [finset.sum_insert ha, finset.sum_insert ha, ←ih],
-      dsimp only,
-      refl,
-    end],
-
-    eapply ideal.sum_mem (ideal.span _),
+    apply ideal.sum_mem (ideal.span _),
 
     rintros j hj,
-    eapply ideal.mul_mem_left (ideal.span _),
-    have hj2 := j.2,
+    rw [smul_eq_mul, subring.coe_mul],
+    apply ideal.mul_mem_left (ideal.span _),
+    have hj2 := j.prop,
     change ∃ s, _ at hj2,
     obtain ⟨s, hs, n, s_mem, hj2⟩ := hj2,
-    erw hj2, dsimp only,
+    erw hj2, dsimp only [subtype.coe_mk],
     have eq2 : (localization.mk s ⟨f ^ n, ⟨_, rfl⟩⟩ : localization.away f) =
       localization.mk 1 ⟨f^n, ⟨_, rfl⟩⟩ * localization.mk s 1,
     { rw [localization.mk_mul, one_mul, mul_one], },
@@ -307,12 +298,11 @@ begin
   classical,
   contrapose! eq_top,
   obtain ⟨c, N, acd, eq1⟩ := mem_carrier.clear_denominator _ x ((ideal.eq_top_iff_one _).mp eq_top),
-  rw [algebra.smul_def, subtype.val_eq_coe, subring.coe_one, mul_one] at eq1,
+  rw [algebra.smul_def, subring.coe_one, mul_one] at eq1,
   change localization.mk (f ^ N) 1 = mk (∑ _, _) 1 at eq1,
   simp only [mk_eq_mk', is_localization.eq] at eq1,
   rcases eq1 with ⟨⟨_, ⟨M, rfl⟩⟩, eq1⟩,
   erw [mul_one, mul_one] at eq1,
-  simp only [← subtype.val_eq_coe] at eq1,
   refine set.ne_empty_iff_nonempty.mpr ⟨f^N * f^M, eq1.symm ▸ mul_mem_right _ _
     (sum_mem _ (λ i hi, mul_mem_left _ _ _)), ⟨N+M, by rw pow_add⟩⟩,
   generalize_proofs h,
@@ -330,7 +320,7 @@ def to_fun : (Proj.T| (pbo f)) → (Spec.T (A⁰_ f_deg)) := λ x,
   induction x2 using localization.induction_on with data_x2,
   rcases ⟨data_x1, data_x2⟩ with ⟨⟨a1, _, ⟨n1, rfl⟩⟩, ⟨a2, _, ⟨n2, rfl⟩⟩⟩,
   rcases mem_carrier.clear_denominator f_deg x hx12 with ⟨c, N, acd, eq1⟩,
-  simp only [degree_zero_part.mul_val, localization.mk_mul, mul_one, algebra.smul_def] at eq1,
+  simp only [subring.coe_mul, localization.mk_mul, mul_one, algebra.smul_def, subtype.coe_mk] at eq1,
   change localization.mk (f ^ N) 1 * mk _ (⟨f ^ n1 * f ^ n2, _⟩) = mk (∑ _, _) _ at eq1,
   rw [mk_mul, one_mul] at eq1,
   simp only [mk_mul, mk_eq_mk', is_localization.eq] at eq1,

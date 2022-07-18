@@ -114,7 +114,7 @@ lemma data.eq_num_div_denom :
 begin 
   rw classical.some_spec (classical.some_spec (data.exist_rep hm f_deg y (data hm f_deg hh y))), 
   congr, 
-  rw subtype.ext_iff_val, 
+  rw subtype.ext_iff, 
   refl,
 end
 
@@ -215,23 +215,23 @@ begin
   obtain ⟨⟨⟨C, C_degree_zero⟩, hC⟩, eq1⟩ := eq1,
   induction C using localization.induction_on with 𝔻,
   obtain ⟨C, ⟨_, ⟨l, rfl⟩⟩⟩ := 𝔻,
-  simp only [←subtype.val_eq_coe, mul_one, one_mul] at eq1,
+  simp only [mul_one, one_mul, subtype.coe_mk] at eq1,
   simp only [localization.mk_eq_mk', is_localization.eq],
   change _ ∉ _ at hC,
   erw Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff at hC,
+  rw subtype.coe_mk at hC,
   dsimp only at C_degree_zero hC,
 
   have eq_num := degree_zero_part.eq (data.num hm f_deg 1 y),
   have eq_denom := degree_zero_part.eq (data.denom hm f_deg 1 y),
 
   simp only [subtype.val_eq_coe, submonoid.coe_one, mul_one] at eq1,
-  rw subtype.ext_iff_val at eq1,
-  simp only [degree_zero_part.mul_val] at eq1,
+  rw subtype.ext_iff at eq1,
+  simp only [subring.coe_mul] at eq1,
   erw [eq_num, eq_denom, localization.mk_mul, localization.mk_mul] at eq1,
-  simp only [localization.mk_eq_mk', is_localization.eq] at eq1,
+  simp only [localization.mk_eq_mk', is_localization.eq, subtype.coe_mk] at eq1,
   obtain ⟨⟨_, ⟨n1, rfl⟩⟩, eq1⟩ := eq1,
-  simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl, ←pow_add] at eq1,
+  simp only [submonoid.coe_mul, subtype.coe_mk] at eq1,
 
   have C_not_mem : C ∉ y.1.as_homogeneous_ideal,
   { intro rid,
@@ -255,7 +255,7 @@ begin
     exact H3, },
 
   simp only [submonoid.coe_one, one_mul, mul_one],
-  simp only [←subtype.val_eq_coe],
+  simp only [subtype.coe_mk],
 
   rw calc degree_zero_part.num (data.num hm f_deg 1 y)
         * f ^ degree_zero_part.deg (data.denom hm f_deg 1 y)
@@ -263,7 +263,7 @@ begin
       = degree_zero_part.num (data.num hm f_deg 1 y) * C
         * f ^ (degree_zero_part.deg (data.denom hm f_deg 1 y) + l)
         * f^n1 : by ring_exp,
-  rw [eq1, pow_add],
+  rw [pow_add, eq1],
   ring,
 end
 
@@ -302,26 +302,25 @@ begin
   obtain ⟨⟨⟨C, C_degree_zero⟩, hC⟩, eq1⟩ := eq1,
   induction C using localization.induction_on with 𝔻,
   obtain ⟨C, ⟨_, ⟨l, rfl⟩⟩⟩ := 𝔻,
-  simp only [submonoid.coe_one, mul_one, one_mul] at eq1,
-  simp only [←subtype.val_eq_coe, zero_mul] at eq1,
+  simp only [submonoid.coe_one, mul_one, one_mul, subtype.coe_mk] at eq1,
+  simp only [zero_mul] at eq1,
   simp only [localization.mk_eq_mk', is_localization.eq],
   change _ ∉ _ at hC,
   erw Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff at hC,
-  dsimp only at C_degree_zero hC,
+  dsimp only [subtype.coe_mk] at C_degree_zero hC,
 
   have eq_num := degree_zero_part.eq (data.num hm f_deg 0 y),
   have eq_denom := degree_zero_part.eq (data.denom hm f_deg 0 y),
 
-  rw subtype.ext_iff_val at eq1,
-  simp only [degree_zero_part.mul_val] at eq1,
-  rw [eq_num, degree_zero_part.zero_val,
+  rw subtype.ext_iff at eq1,
+  simp only [subring.coe_mul, subtype.coe_mk] at eq1,
+  rw [eq_num, subring.coe_zero,
     show (0 : localization.away f) = localization.mk 0 1, by rw localization.mk_zero,
     localization.mk_mul] at eq1,
   simp only [localization.mk_eq_mk', is_localization.eq] at eq1,
   obtain ⟨⟨_, ⟨n1, rfl⟩⟩, eq1⟩ := eq1,
-  simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl, ←pow_add,
-    show (1 : submonoid.powers f).1 = 1, from rfl, mul_one, zero_mul] at eq1,
+  simp only [submonoid.coe_mul, ←pow_add,
+    submonoid.coe_one, mul_one, zero_mul, subtype.coe_mk] at eq1,
 
   have C_not_mem : C ∉ y.1.as_homogeneous_ideal,
   { intro rid,
@@ -386,11 +385,10 @@ begin
   obtain ⟨C, ⟨_, ⟨l, rfl⟩⟩⟩ := 𝔻,
   change _ ∉ _ at hC, 
   erw Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff at hC,
-  simp only at hC,
-  simp only [submonoid.coe_mul] at add_eq,
-  simp only [←subtype.val_eq_coe] at add_eq,
-  rw subtype.ext_iff_val at add_eq,
-  simp only [degree_zero_part.add_val, degree_zero_part.mul_val] at add_eq,
+  simp only [subtype.coe_mk] at hC,
+  simp only [submonoid.coe_mul, subtype.coe_mk] at add_eq,
+  rw subtype.ext_iff at add_eq,
+  simp only [subring.coe_add, subring.coe_mul, subtype.coe_mk] at add_eq,
 
   have C_not_mem : C ∉ z.1.as_homogeneous_ideal,
   { intro rid,
@@ -403,12 +401,12 @@ begin
     apply ideal.subset_span,
     exact ⟨C, rid, rfl⟩, },
 
-  simp only [degree_zero_part.eq, localization.mk_mul, localization.add_mk, ←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl] at add_eq,
+  simp only [degree_zero_part.eq, localization.mk_mul, localization.add_mk,
+    submonoid.coe_mul] at add_eq,
   rw [localization.mk_eq_mk', is_localization.eq] at add_eq,
   obtain ⟨⟨_, ⟨n1, rfl⟩⟩, add_eq⟩ := add_eq,
   simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl] at add_eq,
+    submonoid.coe_mul] at add_eq,
 
   set a_xy : A := degree_zero_part.num (data.num hm f_deg (x + y) z) with a_xy_eq,
   set i_xy : ℕ := degree_zero_part.deg (data.num hm f_deg (x + y) z) with i_xy_eq,
@@ -437,7 +435,7 @@ begin
     end⟩,
     begin
       intros α β,
-      simp only [subtype.ext_iff_val],
+      simp only [subtype.ext_iff],
       refl,
     end,
     show b_x * f ^ i_x * (a_y * f ^ j_y) = a_y * b_x * f ^ (i_x + j_y),
@@ -516,16 +514,16 @@ begin
 
   have mul_eq := data.eq_num_div_denom hm f_deg (x * y) z,
   rw [data.mul_apply, data.eq_num_div_denom, data.eq_num_div_denom, localization.mk_mul] at mul_eq,
-  simp only [←subtype.val_eq_coe, localization.mk_eq_mk'] at mul_eq,
+  simp only [localization.mk_eq_mk'] at mul_eq,
   erw is_localization.eq at mul_eq,
   obtain ⟨⟨⟨C, C_degree_zero⟩, hC⟩, mul_eq⟩ := mul_eq,
   induction C using localization.induction_on with 𝔻,
   obtain ⟨C, ⟨_, ⟨l, rfl⟩⟩⟩ := 𝔻,
   change _ ∉ _ at hC,
   erw Proj_iso_Spec_Top_component.to_Spec.mem_carrier_iff at hC,
-  simp only at hC,
+  simp only [subtype.coe_mk] at hC,
   simp only [←subtype.val_eq_coe] at mul_eq,
-  rw subtype.ext_iff_val at mul_eq,
+  rw subtype.ext_iff at mul_eq,
 
   have C_not_mem : C ∉ z.1.as_homogeneous_ideal,
   { intro rid,
@@ -538,16 +536,16 @@ begin
     apply ideal.subset_span,
     exact ⟨C, rid, rfl⟩, },
 
-  simp only [degree_zero_part.mul_val, degree_zero_part.add_val,
+  simp only [subring.coe_mul, coe_add, subtype.coe_mk,
     show ∀ (α β : (prime_spectrum.as_ideal (((Proj_iso_Spec_Top_component hm f_deg).hom)
       ⟨z.val, z_mem⟩)).prime_compl),
       (α * β).1 = α.1 * β.1, from λ _ _, rfl] at mul_eq,
-  simp only [degree_zero_part.eq, localization.mk_mul, localization.add_mk, ←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl] at mul_eq,
+  simp only [degree_zero_part.eq, localization.mk_mul, localization.add_mk,
+    submonoid.coe_mul] at mul_eq,
   rw [localization.mk_eq_mk', is_localization.eq] at mul_eq,
   obtain ⟨⟨_, ⟨n1, rfl⟩⟩, mul_eq⟩ := mul_eq,
   simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl] at mul_eq,
+    submonoid.coe_mul] at mul_eq,
 
   set a_xy : A := degree_zero_part.num (data.num hm f_deg (x * y) z) with a_xy_eq,
   set i_xy : ℕ := degree_zero_part.deg (data.num hm f_deg (x * y) z) with i_xy_eq,
@@ -604,7 +602,7 @@ begin
   erw set.mem_preimage at ha1,
   change ((Proj_iso_Spec_Top_component hm f_deg).hom ⟨y.1, _⟩) ∈ (unop V).1,
   convert ha1,
-  rw subtype.ext_iff_val,
+  rw subtype.ext_iff,
   exact ha2.symm,
 end
 
@@ -639,8 +637,8 @@ def Uo (VV : opens (Spec.T (A⁰_ f_deg))) :
         refine ⟨f, rid, rfl⟩, } },
     have mem4 : (1 : A⁰_ f_deg) ∈ ((Proj_iso_Spec_Top_component hm f_deg).hom x'.1).as_ideal,
     { convert mem3,
-      rw [subtype.ext_iff_val, degree_zero_part.one_val],
-      dsimp only,
+      rw [subtype.ext_iff, subring.coe_one],
+      dsimp only [subtype.coe_mk],
       symmetry,
       convert localization.mk_self _,
       erw [←subtype.val_eq_coe],
@@ -672,7 +670,7 @@ begin
   erw set.mem_preimage,
   apply subset3,
   exact γ_mem,
-  rw subtype.ext_iff_val,
+  rw subtype.ext_iff,
   dsimp only,
   rw show (opens.inclusion _ γ = γ.1), from rfl,
 end
@@ -762,12 +760,12 @@ begin
   erw is_localization.eq at eq1,
 
   obtain ⟨⟨⟨_, ⟨L, ⟨C, C_mem⟩, rfl⟩⟩, hC⟩, eq1⟩ := eq1,
-  simp only [←subtype.val_eq_coe, subtype.ext_iff_val, degree_zero_part.mul_val] at eq1,
-  simp only [degree_zero_part.eq, localization.mk_mul] at eq1,
+  simp only [subtype.ext_iff, subring.coe_mul] at eq1,
+  simp only [degree_zero_part.eq, localization.mk_mul, subtype.coe_mk] at eq1,
   erw [localization.mk_eq_mk', is_localization.eq] at eq1,
   obtain ⟨⟨_, ⟨M, rfl⟩⟩, eq1⟩ := eq1,
   simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl, ←pow_add] at eq1,
+    submonoid.coe_mul, ←pow_add] at eq1,
 
   unfold bmk,
   rw [homogeneous_localization.val_mk'],
@@ -786,7 +784,7 @@ begin
     have eq1 : (localization.mk C ⟨f ^ L, ⟨_, rfl⟩⟩ : localization.away f) =
       (localization.mk 1 ⟨f^L, ⟨_, rfl⟩⟩ : localization.away f) * localization.mk C 1,
       rw [localization.mk_mul, one_mul, mul_one],
-    simp only [eq1] at hC,
+    simp only [eq1, subtype.coe_mk] at hC,
     apply hC,
     change _ * _ ∈ _,
     rw [set_like.mem_coe],
@@ -804,7 +802,7 @@ begin
   end⟩, _⟩,
 
   simp only [←subtype.val_eq_coe,
-    show ∀ (α β : submonoid.powers f), (α * β).1 = α.1 * β.1, from λ _ _, rfl],
+    submonoid.coe_mul],
 
   suffices EQ : p * f^jj * (β' * f^l1) * (C * f^(L+M)) = α' * f^l2 * (q * f^ii) * (C * f^(L + M)),
   convert EQ,
@@ -835,19 +833,19 @@ end⟩
 def to_fun : (Spec (A⁰_ f_deg)).presheaf.obj V ⟶ ((Proj_iso_Spec_Top_component hm f_deg).hom _* (Proj| (pbo f)).presheaf).obj V :=
 { to_fun := λ hh, to_fun.aux hm f_deg V hh,
   map_one' := begin
-    rw subtype.ext_iff_val,
+    rw subtype.ext_iff,
     convert bmk_one hm f_deg V,
   end,
   map_mul' := λ x y, begin
-    rw subtype.ext_iff_val,
+    rw subtype.ext_iff,
     convert bmk_mul hm f_deg V x y,
   end,
   map_zero' := begin
-    rw subtype.ext_iff_val,
+    rw subtype.ext_iff,
     convert bmk_zero hm f_deg V,
   end,
   map_add' := λ x y, begin
-    rw subtype.ext_iff_val,
+    rw subtype.ext_iff,
     convert bmk_add hm f_deg V x y,
   end }
 

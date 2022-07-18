@@ -69,7 +69,7 @@ lemma pf_sheaf.mul_val (x y : (pf_sheaf (Proj| (pbo f))).obj U) :
 variables {f_deg hm U}
 lemma inv_mem (y : unop U) :
   ((Proj_iso_Spec_Top_component hm f_deg).inv y.1).1 ∈
-    ((@opens.open_embedding Proj.T (pbo f)).is_open_map.functor.op.obj 
+    ((@opens.open_embedding Proj.T (pbo f)).is_open_map.functor.op.obj
       ((opens.map (Proj_iso_Spec_Top_component hm f_deg).hom).op.obj U)).unop :=
 begin
   refine ⟨⟨((Proj_iso_Spec_Top_component hm f_deg).inv y.1).1, ((Proj_iso_Spec_Top_component hm f_deg).inv y.1).2⟩, _, rfl⟩,
@@ -102,9 +102,9 @@ by rw [hl, hl, hl, pf_sheaf.mul_val, pi.mul_apply]
 
 
 def num (y : unop U) : A⁰_ f_deg :=
-⟨mk ((hl hm hh y).num * (hl hm hh y).denom ^ m.pred) ⟨f^(hl hm hh y).deg, ⟨_, rfl⟩⟩, 
+⟨mk ((hl hm hh y).num * (hl hm hh y).denom ^ m.pred) ⟨f^(hl hm hh y).deg, ⟨_, rfl⟩⟩,
   ⟨(hl hm hh y).deg, ⟨(hl hm hh y).num * (hl hm hh y).denom ^ m.pred, begin
-    convert mul_mem (hl hm hh y).num_mem (set_like.graded_monoid.pow_mem m.pred (hl hm hh y).denom_mem), 
+    convert mul_mem (hl hm hh y).num_mem (set_like.graded_monoid.pow_mem m.pred (hl hm hh y).denom_mem),
     exact calc m * (hl hm hh y).deg
             = (m.pred + 1) * (hl hm hh y).deg
             : begin
@@ -121,7 +121,7 @@ def num (y : unop U) : A⁰_ f_deg :=
   end⟩, rfl⟩⟩
 
 def denom (y : unop U) : A⁰_ f_deg :=
-⟨mk ((hl hm hh y).denom ^ m) ⟨f^(hl hm hh y).deg, ⟨_, rfl⟩⟩, 
+⟨mk ((hl hm hh y).denom ^ m) ⟨f^(hl hm hh y).deg, ⟨_, rfl⟩⟩,
   ⟨(hl hm hh y).deg, ⟨_, set_like.graded_monoid.pow_mem m (hl hm hh y).denom_mem⟩, rfl⟩⟩
 
 lemma denom.not_mem (y : unop U) : denom hm hh y ∉ y.1.as_ideal := λ r,
@@ -177,10 +177,10 @@ begin
   rw [one_mul, submonoid.coe_one, mul_one] at eq1,
   simp only [←subtype.val_eq_coe] at eq1,
   rw [← hl.one] at eq1,
-  have eq2 : graded_algebra.proj 𝒜 ((hl hm 1 y).deg + j) ((hl hm 1 y).denom * c) 
+  have eq2 : graded_algebra.proj 𝒜 ((hl hm 1 y).deg + j) ((hl hm 1 y).denom * c)
     = graded_algebra.proj 𝒜 ((hl hm 1 y).deg + j) ((hl hm 1 y).num * c),
   { exact congr_arg _ eq1, },
-  
+
   have eq3 : graded_algebra.proj 𝒜 ((hl hm 1 y).deg + j) ((hl hm 1 y).denom * c)
     = (hl hm 1 y).denom * (graded_algebra.proj 𝒜 j c),
   { apply graded_algebra.proj_hom_mul,
@@ -207,7 +207,11 @@ begin
   dsimp only,
 
   unfold num denom,
-  rw [subtype.ext_iff_val, degree_zero_part.mul_val, mk_mul, degree_zero_part.mul_val, mk_mul],
+  rw [subtype.ext_iff, subring.coe_mul],
+  dsimp only [subtype.coe_mk],
+  rw [mk_mul, subring.coe_mul],
+  dsimp only [subtype.coe_mk],
+  rw [mk_mul],
   congr' 1,
   exact calc (hl hm 1 y).num * (hl hm 1 y).denom ^ m.pred * (graded_algebra.proj 𝒜 j) c ^ m
           = (hl hm 1 y).num * (hl hm 1 y).denom ^ m.pred * (graded_algebra.proj 𝒜 j) c ^ (m.pred + 1)
@@ -274,10 +278,11 @@ begin
 
   use mk ((graded_algebra.proj 𝒜 j c)^m) ⟨f^j, ⟨_, rfl⟩⟩,
   unfold num,
-  rw [subtype.ext_iff_val, degree_zero_part.mul_val, degree_zero_part.mul_val, degree_zero_part.mul_val, degree_zero_part.mul_val, degree_zero_part.zero_val, zero_mul, submonoid.coe_one, degree_zero_part.one_val, mul_one, zero_mul],
-  simp only [← subtype.val_eq_coe],
+  dsimp only [subtype.coe_mk],
+  rw [subtype.ext_iff, subring.coe_mul, subring.coe_mul, subring.coe_mul, subring.coe_mul,
+    add_submonoid_class.coe_zero, zero_mul, submonoid.coe_one, subring.coe_one, mul_one, zero_mul],
+  dsimp only [subtype.coe_mk],
   rw [mk_mul],
-  dsimp only,
   convert mk_zero _,
   exact calc (hl hm 0 y).num * (hl hm 0 y).denom ^ m.pred * (graded_algebra.proj 𝒜 j) c ^ m
           = (hl hm 0 y).num * (hl hm 0 y).denom ^ m.pred * (graded_algebra.proj 𝒜 j) c ^ (m.pred + 1)
@@ -329,7 +334,8 @@ begin
 
   use localization.mk ((graded_algebra.proj 𝒜 j c)^m) ⟨f^j, ⟨_, rfl⟩⟩,
   rw [submonoid.coe_mul],
-  simp only [← subtype.val_eq_coe, subtype.ext_iff_val, degree_zero_part.mul_val, degree_zero_part.add_val, mk_mul, add_mk],
+  simp only [subtype.ext_iff, subring.coe_mul, add_mem_class.coe_add, mk_mul, add_mk,
+    subtype.coe_mk],
   rw [localization.mk_eq_mk', is_localization.eq],
   use 1,
   simp only [submonoid.coe_one, submonoid.mk_mul_mk, set_like.coe_mk, mul_one, ← pow_add],
@@ -510,7 +516,7 @@ begin
 
   use mk ((graded_algebra.proj 𝒜 j c)^m) ⟨f^j, ⟨_, rfl⟩⟩,
   simp only [submonoid.coe_mul],
-  simp only [← subtype.val_eq_coe, subtype.ext_iff_val, degree_zero_part.mul_val, mk_mul],
+  simp only [← subtype.val_eq_coe, subtype.ext_iff, subring.coe_mul, mk_mul],
   simp only [mk_eq_mk', is_localization.eq],
 
   use 1,
@@ -608,9 +614,13 @@ end
 
 namespace is_locally_quotient
 
+variables {α : Type*} (p : α → Prop)
+
 variable (f_deg)
 def open_set (V : opens Proj.T) : opens (Spec.T (A⁰_ f_deg)) :=
-⟨homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg) '' {z | z.1 ∈ V.1}, begin
+⟨homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg) ''
+  {z | @coe (subtype _) ↥((Proj.to_LocallyRingedSpace (λ {m : ℕ}, 𝒜 m)).to_Top) _ z ∈ V.1}, begin
+  have := Proj.T,
   rw [homeomorph.is_open_image, is_open_induced_iff],
   refine ⟨V.1, V.2, _⟩,
   ext z, split; intro hz,
@@ -629,14 +639,14 @@ begin
   have subset2 := le_of_hom subset1,
   rintros z z_mem,
   obtain ⟨z, z_mem, rfl⟩ := z_mem,
-  change z.1 ∈ _ at z_mem,
+  dsimp only [set.mem_set_of] at z_mem,
   specialize subset2 z_mem,
   obtain ⟨a, a_mem, eq2⟩ := subset2,
   erw set.mem_preimage at a_mem,
   rw homeo_of_iso_apply,
   change _ ∈ (unop U).val,
   convert a_mem,
-  rw subtype.ext_iff_val,
+  rw subtype.ext_iff,
   rw ←eq2,
   refl,
 end
@@ -652,7 +662,7 @@ end
 
 /--
 For b ∈ 𝒜 i
-z ∈ V and b ∉ z, then b^m / f^i ∉ forward f 
+z ∈ V and b ∉ z, then b^m / f^i ∉ forward f
 -/
 lemma not_mem
   (V : opens Proj.T)
@@ -660,10 +670,10 @@ lemma not_mem
   --           ((opens.map (Top_component hm f_deg).hom).op.obj U)).unop)
   (b : A) (degree : ℕ) (b_mem : b ∈ 𝒜 degree)
   (z : Proj.T| (pbo f))
-  (z_mem : z.1 ∈ V.1) 
+  (z_mem : z.1 ∈ V.1)
   (b_not_mem : b ∉ z.1.as_homogeneous_ideal) :
   (⟨localization.mk (b^m) ⟨f^degree, ⟨_, rfl⟩⟩,
-    ⟨degree, ⟨_, set_like.graded_monoid.pow_mem _ b_mem⟩, rfl⟩⟩ : A⁰_ f_deg) 
+    ⟨degree, ⟨_, set_like.graded_monoid.pow_mem _ b_mem⟩, rfl⟩⟩ : A⁰_ f_deg)
   ∉ ((homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg)) z).as_ideal := λ rid,
 begin
   classical,
@@ -675,6 +685,7 @@ begin
   erw [←ideal.submodule_span_eq, finsupp.span_eq_range_total, set.mem_range] at rid,
   obtain ⟨c, eq1⟩ := rid,
   erw [finsupp.total_apply, finsupp.sum] at eq1,
+  dsimp only [subtype.coe_mk] at eq1,
   obtain ⟨N, hN⟩ := clear_denominator (finset.image (λ i, c i * i.1) c.support),
   -- N is the common denom
   choose after_clear_denominator hacd using hN,
@@ -994,8 +1005,8 @@ begin
   change _ ∈ ((homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg)) z).1 at rid,
   have rid2 : (1 : A⁰_ f_deg) ∈ ((homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg)) z).1,
   { convert rid,
-    rw subtype.ext_iff_val,
-    dsimp only,
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
     erw localization.mk_self (⟨f^m, ⟨_, rfl⟩⟩ : submonoid.powers f),
     refl, },
   rw homeo_of_iso_apply at rid2,
@@ -1034,8 +1045,8 @@ begin
   change _ ∈ ((homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg)) z).1 at rid,
   have rid2 : (1 : A⁰_ f_deg) ∈ ((homeo_of_iso (Proj_iso_Spec_Top_component hm f_deg)) z).1,
   { convert rid,
-    rw subtype.ext_iff_val,
-    dsimp only,
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
     erw localization.mk_self (⟨f^m, ⟨_, rfl⟩⟩ : submonoid.powers f),
     refl, },
   rw homeo_of_iso_apply at rid2,
@@ -1052,11 +1063,11 @@ begin
   refine ⟨z, z_mem, _⟩,
   simp only [homeo_of_iso_apply],
   congr',
-  rw subtype.ext_iff_val,
-  dsimp only,
+  rw subtype.ext_iff,
+  dsimp only [subtype.coe_mk],
   rw z'_eq,
   change z.1 = (Proj_iso_Spec_Top_component.from_Spec hm f_deg (Proj_iso_Spec_Top_component.to_Spec _ _ _)).1,
-  congr', 
+  congr',
   symmetry,
   apply Proj_iso_Spec_Top_component.from_Spec_to_Spec 𝒜 hm f_deg z,
 end
@@ -1142,15 +1153,15 @@ begin
   { convert is_locally_quotient.inv_hom_mem2 𝒜 hm f_deg V z subset2 z_mem },
 
   have eq_pt : (subset1 ⟨z.1, z_mem⟩) = ⟨z', z'_mem⟩,
-  { rw subtype.ext_iff_val,
+  { rw subtype.ext_iff,
     change z.1 = (Proj_iso_Spec_Top_component.from_Spec hm f_deg (Proj_iso_Spec_Top_component.to_Spec m f_deg _)).1,
-    congr', 
+    congr',
     symmetry,
     apply Proj_iso_Spec_Top_component.from_Spec_to_Spec 𝒜 hm f_deg z, },
   erw [eq_pt] at eq1,
 
   unfold num denom,
-  simp only [←subtype.val_eq_coe, subtype.ext_iff_val, degree_zero_part.mul_val, localization.mk_mul],
+  simp only [←subtype.val_eq_coe, subtype.ext_iff, subring.coe_mul, localization.mk_mul],
   rw [localization.mk_eq_mk', is_localization.eq],
   use 1,
   simp only [submonoid.coe_mul, submonoid.coe_one],
@@ -1218,37 +1229,37 @@ begin
 end
 
 variable (U)
-def to_fun : (pf_sheaf (Proj| (pbo f))).obj U ⟶ (Spec (A⁰_ f_deg)).presheaf.obj U := 
+def to_fun : (pf_sheaf (Proj| (pbo f))).obj U ⟶ (Spec (A⁰_ f_deg)).presheaf.obj U :=
 { to_fun := λ hh, ⟨λ y, fmk hm hh y, begin
     rw algebraic_geometry.structure_sheaf.is_locally_fraction_pred',
     exact fmk_is_locally_quotient hm f_deg hh,
   end⟩,
-  map_one' := begin 
-    rw subtype.ext_iff_val, 
-    dsimp only, 
-    ext y, 
+  map_one' := begin
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
+    ext y,
     rw [fmk.one hm],
     convert pi.one_apply _,
   end,
   map_mul' := λ x y, begin
-    rw subtype.ext_iff_val, 
-    dsimp only, 
-    ext z, 
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
+    ext z,
     rw [fmk.mul hm],
     change _ * _ = _ * _,
     dsimp only,
     refl,
   end,
   map_zero' := begin
-    rw subtype.ext_iff_val, 
-    dsimp only, 
-    ext y, 
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
+    ext y,
     rw [fmk.zero hm],
     convert pi.zero_apply _,
   end,
   map_add' := λ x y, begin
-    rw subtype.ext_iff_val,
-    dsimp only,
+    rw subtype.ext_iff,
+    dsimp only [subtype.coe_mk],
     ext z,
     rw [fmk.add hm],
     change _ + _ = fmk hm x z + fmk hm y z,
