@@ -5,27 +5,6 @@ import cicm2022.internal.graded_ring
 
 section
 
-variables {ι R A : Type*}
-variables [comm_ring R] [comm_ring A] [algebra R A] [decidable_eq ι] [add_monoid ι]
-
-variables (𝒜 : ι → submodule R A)
-variables [graded_algebra 𝒜]
-
-lemma set_like.graded_monoid.nat_mem (n : ℕ) : (n : A) ∈ 𝒜 0 :=
-begin
-  induction n with n ih,
-  simp only [nat.cast_zero, submodule.zero_mem],
-
-  rw nat.succ_eq_add_one,
-  simp only [nat.cast_add, nat.cast_one],
-  apply submodule.add_mem _ ih,
-  exact set_like.graded_monoid.one_mem,
-end
-
-end
-
-section
-
 open_locale big_operators
 
 variables {R : Type*} [comm_ring R] (M : submonoid R)
