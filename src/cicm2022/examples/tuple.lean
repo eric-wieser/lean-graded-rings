@@ -126,3 +126,7 @@ instance tuple.gmonoid {α : Type*} : graded_monoid.gmonoid (λ n, fin n → α)
   }
 
 end fin
+
+lemma list.of_fn_fin_append' {α i j} (a : fin i → α) (b : fin j → α) :
+  list.of_fn (fin.append' a b) = list.of_fn a ++ list.of_fn b :=
+by simp_rw [_root_.list.of_fn_add, fin.append'_apply_left, fin.append'_apply_right]
