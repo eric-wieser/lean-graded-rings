@@ -18,6 +18,6 @@ namespace algebraic_geometry
 variables {σ R : Type*} [comm_ring R]
 
 noncomputable def projective_space (n : ℕ) : Scheme :=
-Proj.to_Scheme (λ i, mv_polynomial.homogeneous_submodule (fin (n + 1) R i)
+Proj.to_Scheme (λ i, mv_polynomial.homogeneous_submodule (fin (n + 1)) R i)
 
 end algebraic_geometry
