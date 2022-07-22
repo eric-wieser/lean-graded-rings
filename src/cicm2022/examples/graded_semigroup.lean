@@ -31,7 +31,7 @@ class «eq.rec».g_semigroup [add_semigroup ι] :=
 
 class «cast».g_semigroup [add_semigroup ι] :=
 (cast {i j} (h : i = j) : A i → A j)
-(cast_eq_eq_rec {i j} (h : i = j) (x : A i) : cast h x = h.rec x)
+(cast_rfl {i} (x : A i) : cast rfl x = x)
 (mul {i j} : A i → A j → A (i + j))
 (mul_assoc {i j k : ι} (x : A i) (y : A j) (z : A k) :
   cast (add_assoc i j k) (mul (mul x y) z) = mul x (mul y z))
