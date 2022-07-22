@@ -2,6 +2,8 @@
 Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
+
+From: https://github.com/leanprover-community/mathlib/blob/6b93ea7e4bbe7822960e821141e5a931537cd755/src/ring_theory/graded_algebra/homogeneous_ideal.lean
 -/
 import ring_theory.ideal.basic
 import ring_theory.ideal.operations

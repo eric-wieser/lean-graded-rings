@@ -1,4 +1,7 @@
 import algebra.group.basic
+/-!
+This file contains code examples from §2.1 of the corresponding paper.
+-/
 
 variables {ι : Type*} {A : ι → Type*}
 

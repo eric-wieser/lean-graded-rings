@@ -2,6 +2,8 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
+
+From: https://github.com/leanprover-community/mathlib/blob/ae10dceda978370b312f93a53a0e93fd2157d5bf/src/algebraic_geometry/projective_spectrum/topology.lean
 -/
 
 import topology.category.Top

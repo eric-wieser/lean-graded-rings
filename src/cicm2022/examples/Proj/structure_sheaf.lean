@@ -2,6 +2,8 @@
 Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
+
+From: https://github.com/leanprover-community/mathlib/blob/ae10dceda978370b312f93a53a0e93fd2157d5bf/src/algebraic_geometry/projective_spectrum/structure_sheaf.lean
 -/
 import topology.sheaves.local_predicate
 import algebraic_geometry.locally_ringed_space

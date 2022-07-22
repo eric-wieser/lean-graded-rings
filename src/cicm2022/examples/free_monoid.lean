@@ -2,6 +2,9 @@ import algebra.free_monoid
 import data.set.pointwise
 
 import cicm2022.graded_monoid
+/-!
+This file contains an examples from §2.2 of the corresponding paper.
+-/
 
 open_locale pointwise
 
