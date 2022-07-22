@@ -8,7 +8,8 @@ This repository contains an executable version of the source code from the paper
 > Notably, we show how this formalization was used as an API; allowing us to formalize various types of graded structure such as those on tuples, free monoids, tensor algebras, and Clifford algebras.
 
 Many of the files in this repo are virtually copies of the versions now found in mathlib; they have been separated out for convenience of presentation.
-Such files are indicated by a comment of the form `https://github.com/leanprover-community/mathlib/blob/...` in the first few lines.
+Such files are indicated by a comment of the form `From: https://github.com/leanprover-community/mathlib/blob/...` in the first few lines.
+Other files are extract from in-progress pull rqeuests. These are indicated with a similar comment.
 
 This repository contains a `.gitpod.yml` file which allows it be explored with a full vscode + lean setup in-browser, by clicking on the button below:
 

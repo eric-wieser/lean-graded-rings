@@ -2,6 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
+
+From https://github.com/leanprover-community/mathlib/blob/6b93ea7e4bbe7822960e821141e5a931537cd755/src/ring_theory/polynomial/homogeneous.lean
+
+Only the `homogeneous_submodule.gcomm_semiring` result is relevant to this repository, much of the
+other theory predates the associated paper. 
 -/
 
 import data.fintype.card

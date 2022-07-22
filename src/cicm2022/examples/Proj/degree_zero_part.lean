@@ -1,6 +1,14 @@
+/-
+Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
 import ring_theory.localization.away
 
 import cicm2022.internal.graded_ring
+/-!
+This file has not yet been PR'd to mathlib.
+-/
 
 noncomputable theory
 

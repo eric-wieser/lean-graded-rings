@@ -1,5 +1,21 @@
-import ..multivariate_polynomial.homogeneous
-import ..Proj
+/-
+Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+
+From: https://github.com/leanprover-community/mathlib/pull/10119
+-/
+import .homogeneous
+import cicm2022.internal.graded_ring
+
+/-! # Grading
+
+This file contains an instance of `mv_polynomial R σ` as a `ℕ`-graded algebra.
+
+## Tags
+
+graded algebra, polynomial
+-/
 
 namespace mv_polynomial
 
@@ -79,14 +95,5 @@ noncomputable instance graded_algebra :
   decompose' := decompose R σ,
   left_inv := λ x, by apply right_inv,
   right_inv := λ x, by apply left_inv }
-
-section
-
-open algebraic_geometry
-
-noncomputable def projective_n_space : Scheme := 
-Proj.to_Scheme (λ i : ℕ, (homogeneous_submodule σ R i))
-
-end
 
 end mv_polynomial
