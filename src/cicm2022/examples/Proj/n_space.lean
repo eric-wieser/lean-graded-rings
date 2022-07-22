@@ -10,11 +10,14 @@ import .Proj
 # projective $n$-space
 
 This is one of the most fundamental objects in the study of algebraic geometry.
+This definition matches that from <https://stacks.math.columbia.edu/tag/01ND>.
 -/
 
-open algebraic_geometry
+namespace algebraic_geometry
 
 variables {σ R : Type*} [comm_ring R]
 
-noncomputable def projective_n_space : Scheme := 
-Proj.to_Scheme (λ i, mv_polynomial.homogeneous_submodule σ R i)
+noncomputable def projective_space (n : ℕ) : Scheme :=
+Proj.to_Scheme (λ i, mv_polynomial.homogeneous_submodule (fin (n + 1) R i)
+
+end algebraic_geometry
