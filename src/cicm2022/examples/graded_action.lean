@@ -1,3 +1,11 @@
+/-
+Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang, Eric Wieser
+
+From: https://github.com/leanprover-community/mathlib/pull/14582
+-/
+
 import cicm2022.internal.decomposition
 import cicm2022.internal.graded_ring
 
@@ -66,6 +74,11 @@ class gmul_action [graded_monoid.gmonoid A] extends ghas_smul A M :=
 (one_smul (b : graded_monoid M) : (1 : graded_monoid A) • b = b)
 (mul_smul (a a' : graded_monoid A) (b : graded_monoid M) : (a * a') • b = a • a' • b)
 
+instance gmul_action.to_mul_action [graded_monoid.gmonoid A] [gmul_action A M] :
+  mul_action (graded_monoid A) (graded_monoid M) :=
+{ one_smul := gmul_action.one_smul,
+  mul_smul := gmul_action.mul_smul }
+
 class gdistrib_mul_action [graded_monoid.gmonoid A] extends gmul_action A M :=
 (smul_add {i j} (a : A i) (b c : M j) : smul a (b + c) = smul a b + smul a c)
 (smul_zero {i j} (a : A i) : smul a (0 : M j) = 0)
@@ -75,42 +88,22 @@ class gmodule [graded_monoid.gmonoid A] extends
 (add_smul {i j} (a a' : A i) (b : M j) : smul (a + a') b = smul a b + smul a' b)
 (zero_smul {i j} (b : M j) : smul (0 : A i) b = 0)
 
-def gmodule.smul_add_monoid_hom
-  [graded_monoid.gmonoid A] [gmodule A M] :
-  (⨁ i, A i) →+ (⨁ i, M i) →+ (⨁ i, M i) :=
+/-- The piecewise multiplication from the `has_mul` instance, as a bundled homomorphism. -/
+@[simps]
+def gsmul_hom {i j} [graded_monoid.gmonoid A] [gmodule A M] : A i →+ M j →+ M (i + j) :=
+{ to_fun := λ a,
+  { to_fun := λ b, ghas_smul.smul a b,
+    map_zero' := gdistrib_mul_action.smul_zero _,
+    map_add' := gdistrib_mul_action.smul_add _ },
+  map_zero' := add_monoid_hom.ext $ λ a, gmodule.zero_smul a,
+  map_add' := λ a₁ a₂, add_monoid_hom.ext $ λ b, gmodule.add_smul _ _ _}
+
+/-- The multiplication from the `has_smul` instance, as a bundled homomorphism. -/
+def gmodule.smul_add_monoid_hom [graded_monoid.gmonoid A] [gmodule A M] :
+  (⨁ i, A i) →+ (⨁ i, M i) →+ ⨁ i, M i :=
 direct_sum.to_add_monoid $ λ i,
-{ to_fun := λ a, direct_sum.to_add_monoid $ λ j,
-  { to_fun := λ b, direct_sum.of _ (i + j) (ghas_smul.smul a b),
-    map_zero' :=
-    begin
-      convert map_zero _,
-      apply gdistrib_mul_action.smul_zero,
-    end,
-    map_add' := λ x y,
-    begin
-      convert map_add _ _ _,
-      apply gdistrib_mul_action.smul_add,
-    end },
-  map_zero' := fun_like.ext _ _ $ λ x,
-  begin
-    rw [add_monoid_hom.zero_apply],
-    induction x using direct_sum.induction_on with j y y₁ y₂ ih₁ ih₂,
-    { convert map_zero _, },
-    { simp only [direct_sum.to_add_monoid_of, add_monoid_hom.coe_mk],
-      convert map_zero _,
-      apply gmodule.zero_smul, },
-    { rw [map_add, ih₁, ih₂, zero_add], },
-  end,
-  map_add' := λ a₁ a₂, fun_like.ext _ _ $ λ y,
-  begin
-    induction y using direct_sum.induction_on with j y y₁ y₂ ih₁ ih₂,
-    { rw [map_zero, map_zero] },
-    { simp only [direct_sum.to_add_monoid_of, add_monoid_hom.coe_mk, add_monoid_hom.add_apply],
-      rw [←map_add],
-      congr,
-      apply gmodule.add_smul, },
-    { simp only [map_add, ih₁, ih₂] },
-  end }
+  add_monoid_hom.flip $ direct_sum.to_add_monoid $ λ j, add_monoid_hom.flip $
+    (direct_sum.of M _).comp_hom.comp $ gsmul_hom A M
 
 section
 
@@ -129,9 +122,26 @@ by simp [gmodule.smul_add_monoid_hom]
   {i j} (x : A i) (y : M j) :
   direct_sum.of A i x • direct_sum.of M j y =
   direct_sum.of M (i + j) (ghas_smul.smul x y) :=
-by rw [gmodule.smul_def, gmodule.smul_add_monoid_hom, direct_sum.to_add_monoid_of,
-    add_monoid_hom.coe_mk, direct_sum.to_add_monoid_of, add_monoid_hom.coe_mk]
+gmodule.smul_add_monoid_hom_apply_of_of _ _ _ _
 
+end
+
+open add_monoid_hom
+
+-- Almost identical to the proof of `direct_sum.mul_assoc`
+private lemma mul_smul [direct_sum.gsemiring A] [gmodule A M]
+  (a b : ⨁ i, A i) (c : ⨁ i, M i) : (a * b) • c = a • (b • c) :=
+suffices (gmodule.smul_add_monoid_hom A M).comp_hom.comp (direct_sum.mul_hom A)            -- `λ a b c, a * b * c` as a bundled hom
+       = (add_monoid_hom.comp_hom add_monoid_hom.flip_hom $              -- `λ a b c, a * (b * c)` as a bundled hom
+             (gmodule.smul_add_monoid_hom A M).flip.comp_hom.comp (gmodule.smul_add_monoid_hom A M)).flip,
+  from add_monoid_hom.congr_fun (add_monoid_hom.congr_fun (add_monoid_hom.congr_fun this a) b) c,
+begin
+  ext ai ax bi bx ci cx : 6,
+  dsimp only [coe_comp, function.comp_app, comp_hom_apply_apply, flip_apply, flip_hom_apply],
+  rw [gmodule.smul_add_monoid_hom_apply_of_of, gmodule.smul_add_monoid_hom_apply_of_of,
+    direct_sum.mul_hom_of_of, gmodule.smul_add_monoid_hom_apply_of_of],
+  exact direct_sum.of_eq_of_graded_monoid_eq
+    (mul_smul (graded_monoid.mk ai ax) (graded_monoid.mk bi bx) (graded_monoid.mk ci cx)),
 end
 
 instance gmodule.module [direct_sum.gsemiring A] [gmodule A M] : module (⨁ i, A i) (⨁ i, M i) :=
@@ -147,26 +157,7 @@ instance gmodule.module [direct_sum.gsemiring A] [gmodule A M] : module (⨁ i, 
     { simp only [gmodule.smul_def] at ih₁ ih₂,
       simp only [gmodule.smul_def, map_add, ih₁, ih₂], },
   end,
-  mul_smul := λ x y z,
-  begin
-    rw [gmodule.smul_def, gmodule.smul_def, gmodule.smul_def],
-    induction x using direct_sum.induction_on with i x x₁ x₂ ihx₁ ihx₂,
-    { rw [zero_mul, map_zero, add_monoid_hom.zero_apply, add_monoid_hom.zero_apply], },
-    { induction y using direct_sum.induction_on with j y y₁ y₂ ihy₁ ihy₂,
-      { rw [mul_zero, map_zero, add_monoid_hom.zero_apply, map_zero], },
-      { simp only [direct_sum.of_mul_of, gmodule.smul_add_monoid_hom,
-          direct_sum.to_add_monoid_of, add_monoid_hom.coe_mk],
-        induction z using direct_sum.induction_on with k z z₁ z₂ ihz₁ ihz₂,
-        { rw [map_zero, map_zero, map_zero], },
-        { simp only [direct_sum.to_add_monoid_of, add_monoid_hom.coe_mk],
-          apply direct_sum.of_eq_of_graded_monoid_eq,
-          exact gmul_action.mul_smul ⟨_, x⟩ ⟨_, y⟩ ⟨_, z⟩, },
-        { simp only [map_add, ihz₁, ihz₂], }, },
-      { simp only [map_add, ←ihy₁, ←ihy₂, add_monoid_hom.add_apply],
-        simp_rw [mul_add, map_add],
-        simp only [add_monoid_hom.add_apply], }, },
-    { simp only [add_mul, map_add, ihx₁, ihx₂, add_monoid_hom.add_apply], },
-  end,
+  mul_smul := mul_smul _ _,
   smul_add := λ r x y,
   begin
     induction r using direct_sum.induction_on with i r r₁ r₂ ihr₁ ihr₂,
@@ -203,46 +194,12 @@ variables [add_comm_monoid M] [module A M] [set_like σ M] [add_submonoid_class 
 -- the internal version can be translated into the external version `gmodule`.
 instance gmodule [decidable_eq ι] : gmodule (λ i, 𝓐 i) (λ i, 𝓜 i) :=
 { smul := λ i j x y, ⟨(x : A) • (y : M), set_like.has_graded_smul.smul_mem x.2 y.2⟩,
-  one_smul := λ ⟨i, m⟩,
-  begin
-    ext,
-    { exact zero_add _, },
-    { simp only [←subtype.val_eq_coe],
-      change (1 : A) • (m : M) = m,
-      rw one_smul, },
-  end,
-  mul_smul := λ ⟨i, a⟩ ⟨j, a'⟩ ⟨k, b⟩,
-  begin
-    ext,
-    { exact add_assoc _ _ _, },
-    { simp only [←subtype.val_eq_coe],
-      change (a * a' : A) • ↑b = ↑a • ↑a' • ↑b,
-      rw mul_smul },
-  end,
-  smul_add := λ i j a b c,
-  begin
-    ext,
-    change (a : A) • (b + c : M) = ↑a • ↑b + ↑a • ↑c,
-    rw smul_add,
-  end,
-  smul_zero := λ i j a,
-  begin
-    ext,
-    change (a : A) • (0 : M) = 0,
-    exact smul_zero _,
-  end,
-  add_smul := λ i j a a' b,
-  begin
-    ext,
-    change (↑a + ↑a') • (b : M) = ↑a • b + ↑a' • b,
-    rw add_smul,
-  end,
-  zero_smul := λ i j b,
-  begin
-    ext,
-    change (0 : A) • (b : M) = 0,
-    rw zero_smul,
-  end }
+  one_smul := λ ⟨i, m⟩, sigma.subtype_ext (zero_add _) (one_smul _ _),
+  mul_smul := λ ⟨i, a⟩ ⟨j, a'⟩ ⟨k, b⟩, sigma.subtype_ext (add_assoc _ _ _) (mul_smul _ _ _),
+  smul_add := λ i j a b c, subtype.ext $ smul_add _ _ _,
+  smul_zero := λ i j a, subtype.ext $ smul_zero _,
+  add_smul := λ i j a a' b, subtype.ext $ add_smul _ _ _,
+  zero_smul := λ i j b, subtype.ext $ zero_smul _ _ }
 
 /--
 Since `A ≃+ ⨁ i, 𝓐 i`, the map `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i` defines a smul
@@ -310,7 +267,7 @@ begin
         ext,
         { exact add_assoc _ _ _ },
         { change ((a : A) * b) • (c : M) = (a : A) • ((b : A) • c),
-          rw mul_smul, } },
+          rw mul_action.mul_smul, } },
       { simp only [map_zero, mul_zero, add_monoid_hom.zero_apply], },
       { intros x y hx hy,
         simp only [mul_add, map_add, add_monoid_hom.add_apply, hx, hy], } },
