@@ -5,7 +5,7 @@ This repository contains an executable version of the source code from the paper
 > In principle, dependent type theory should provide an ideal foundation for formalizing graded rings, where each grade can be of a different type.
 > However, the power of these foundations leaves a plethora of choices for how to proceed with such a formalization.
 > This paper explores various different approaches to how formalization could proceed, and then demonstrates precisely how the authors formalized graded algebras in Lean's {\mathlib}.
-> Notably, we show how this formalization was used as an API; allowing us to formalize various types of graded structure such as those on tuples, free monoids, tensor algebras, and Clifford algebras.
+> Notably, we show how this formalization was used as an API; allowing us to formalize graded structures such as those on tuples, free monoids, tensor algebras, and Clifford algebras.
 
 Many of the files in this repo are virtually copies of the versions now found in mathlib; they have been separated out for convenience of presentation.
 Such files are indicated by a comment of the form `From: https://github.com/leanprover-community/mathlib/blob/...` in the first few lines.
@@ -16,7 +16,7 @@ This repository contains a `.gitpod.yml` file which allows it be explored with a
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/eric-wieser/lean-graded-rings)
 
-Note: If you arrived here by following a permalink in our paper and the top of the page does not indicate you are looking at the "master" branch, you will be looking at precisely the version that was submitted for publication.
+Note: If you arrived here by following a permalink in our paper and the top of the page does not indicate you are looking at the "master" branch, you will be looking at precisely the version that was submitted for publication. See the master branch for any corrections or information on how to cite this work.
 
 ## Contributors
 
