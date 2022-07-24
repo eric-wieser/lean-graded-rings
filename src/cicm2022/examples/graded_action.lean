@@ -128,11 +128,23 @@ end
 
 open add_monoid_hom
 
+-- Almost identical to the proof of `direct_sum.one_mul`
+private lemma one_smul [direct_sum.gsemiring A] [gmodule A M] (x : ⨁ i, M i) :
+  (1 : ⨁ i, A i) • x = x :=
+suffices gmodule.smul_add_monoid_hom A M 1 = add_monoid_hom.id (⨁ i, M i),
+  from add_monoid_hom.congr_fun this x,
+begin
+  apply direct_sum.add_hom_ext, intros i xi,
+  unfold has_one.one,
+  rw gmodule.smul_add_monoid_hom_apply_of_of,
+  exact direct_sum.of_eq_of_graded_monoid_eq (one_smul (graded_monoid A) $ graded_monoid.mk i xi),
+end
+
 -- Almost identical to the proof of `direct_sum.mul_assoc`
 private lemma mul_smul [direct_sum.gsemiring A] [gmodule A M]
   (a b : ⨁ i, A i) (c : ⨁ i, M i) : (a * b) • c = a • (b • c) :=
-suffices (gmodule.smul_add_monoid_hom A M).comp_hom.comp (direct_sum.mul_hom A)            -- `λ a b c, a * b * c` as a bundled hom
-       = (add_monoid_hom.comp_hom add_monoid_hom.flip_hom $              -- `λ a b c, a * (b * c)` as a bundled hom
+suffices (gmodule.smul_add_monoid_hom A M).comp_hom.comp (direct_sum.mul_hom A) -- `λ a b c, (a * b) • c` as a bundled hom
+       = (add_monoid_hom.comp_hom add_monoid_hom.flip_hom $                     -- `λ a b c, a • (b • c)` as a bundled hom
              (gmodule.smul_add_monoid_hom A M).flip.comp_hom.comp (gmodule.smul_add_monoid_hom A M)).flip,
   from add_monoid_hom.congr_fun (add_monoid_hom.congr_fun (add_monoid_hom.congr_fun this a) b) c,
 begin
@@ -146,27 +158,10 @@ end
 
 instance gmodule.module [direct_sum.gsemiring A] [gmodule A M] : module (⨁ i, A i) (⨁ i, M i) :=
 { smul := (•),
-  one_smul :=
-  begin
-    intros b,
-    induction b using direct_sum.induction_on with j b x₁ x₂ ih₁ ih₂,
-    { simp, },
-    { rw [show (1 : ⨁ i, A i) = direct_sum.of _ _ _, from rfl, gmodule.of_smul_of],
-      apply direct_sum.of_eq_of_graded_monoid_eq,
-      exact gmul_action.one_smul (⟨_, b⟩ : graded_monoid M) },
-    { simp only [gmodule.smul_def] at ih₁ ih₂,
-      simp only [gmodule.smul_def, map_add, ih₁, ih₂], },
-  end,
+  one_smul := one_smul _ _,
   mul_smul := mul_smul _ _,
-  smul_add := λ r x y,
-  begin
-    induction r using direct_sum.induction_on with i r r₁ r₂ ihr₁ ihr₂,
-    { simp only [gmodule.smul_def, map_zero, add_monoid_hom.zero_apply, add_zero], },
-    { simp only [gmodule.smul_def, map_add] },
-    { simp only [gmodule.smul_def] at ihr₁ ihr₂ ⊢,
-      simp only [map_add, ihr₁, ihr₂], },
-  end,
-  smul_zero := λ r, by simp only [gmodule.smul_def, map_zero],
+  smul_add := λ r, (gmodule.smul_add_monoid_hom A M r).map_add,
+  smul_zero := λ r, (gmodule.smul_add_monoid_hom A M r).map_zero,
   add_smul := λ r s x, by simp only [gmodule.smul_def, map_add, add_monoid_hom.add_apply],
   zero_smul := λ x, by simp only [gmodule.smul_def, map_zero, add_monoid_hom.zero_apply] }
 
@@ -190,76 +185,54 @@ include σ' A σ M
 variables [add_comm_monoid M] [module A M] [set_like σ M] [add_submonoid_class σ' A]
   [add_submonoid_class σ M] [set_like.graded_monoid 𝓐] [set_like.has_graded_smul 𝓐 𝓜]
 
--- [set_like.graded_monoid 𝓐] [set_like.has_graded_smul 𝓐 𝓜] is the internal version of graded module
--- the internal version can be translated into the external version `gmodule`.
-instance gmodule [decidable_eq ι] : gmodule (λ i, 𝓐 i) (λ i, 𝓜 i) :=
+instance gdistrib_mul_action [decidable_eq ι] : gdistrib_mul_action (λ i, 𝓐 i) (λ i, 𝓜 i) :=
 { smul := λ i j x y, ⟨(x : A) • (y : M), set_like.has_graded_smul.smul_mem x.2 y.2⟩,
   one_smul := λ ⟨i, m⟩, sigma.subtype_ext (zero_add _) (one_smul _ _),
   mul_smul := λ ⟨i, a⟩ ⟨j, a'⟩ ⟨k, b⟩, sigma.subtype_ext (add_assoc _ _ _) (mul_smul _ _ _),
   smul_add := λ i j a b c, subtype.ext $ smul_add _ _ _,
-  smul_zero := λ i j a, subtype.ext $ smul_zero _,
+  smul_zero := λ i j a, subtype.ext $ smul_zero _ }
+
+-- [set_like.graded_monoid 𝓐] [set_like.has_graded_smul 𝓐 𝓜] is the internal version of graded module
+-- the internal version can be translated into the external version `gmodule`.
+instance gmodule [decidable_eq ι] : gmodule (λ i, 𝓐 i) (λ i, 𝓜 i) :=
+{ smul := λ i j x y, ⟨(x : A) • (y : M), set_like.has_graded_smul.smul_mem x.2 y.2⟩,
   add_smul := λ i j a a' b, subtype.ext $ add_smul _ _ _,
-  zero_smul := λ i j b, subtype.ext $ zero_smul _ _ }
+  zero_smul := λ i j b, subtype.ext $ zero_smul _ _,
+  ..graded_module.gdistrib_mul_action 𝓐 𝓜}
 
 /--
-Since `A ≃+ ⨁ i, 𝓐 i`, the `⨁ i, 𝓐 i`-module structure on `⨁ i, 𝓜 i` also defines a module
-structure as an `A`-module.
+The smul multiplication of `A` on `⨁ i, 𝓜 i` from `(⨁ i, 𝓐 i) →+ (⨁ i, 𝓜 i) →+ ⨁ i, 𝓜 i`
+turns `⨁ i, 𝓜 i` into an `A`-module
 -/
-instance [decidable_eq ι] [graded_ring 𝓐] : module A (⨁ i, 𝓜 i) :=
-module.comp_hom (⨁ i, 𝓜 i) (direct_sum.decompose_ring_equiv 𝓐 : A →+* ⨁ i, 𝓐 i)
+def is_module [decidable_eq ι] [graded_ring 𝓐] [set_like.has_graded_smul 𝓐 𝓜] :
+  module A (⨁ i, 𝓜 i) :=
+{ smul := λ a b, direct_sum.decompose 𝓐 a • b,
+  ..module.comp_hom _ $
+    (direct_sum.decompose_ring_equiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).to_ring_hom }
+
+local attribute [instance] graded_module.is_module
 
 /--
 `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
+"The internal version" and "the external version" are isomorphism as `A`-modules.
 -/
 def linear_equiv [decidable_eq ι] [graded_ring 𝓐] [set_like.has_graded_smul 𝓐 𝓜]
   [direct_sum.decomposition 𝓜] :
   M ≃ₗ[A] ⨁ i, 𝓜 i :=
 { to_fun := direct_sum.decompose_add_equiv 𝓜,
-  map_add' := λ x y, map_add _ _ _,
   map_smul' := λ x y, begin
-    rw [ring_hom.id_apply],
-    let 𝓜' : ι → add_submonoid M :=
-      λ i, (⟨𝓜 i, λ _ _, add_mem_class.add_mem, zero_mem_class.zero_mem _⟩ : add_submonoid M),
-    haveI t : direct_sum.decomposition 𝓜' :=
-    { decompose' := direct_sum.decompose 𝓜,
-      left_inv := λ _, (direct_sum.decompose 𝓜).left_inv _,
-      right_inv := λ _, (direct_sum.decompose 𝓜).right_inv _, },
-    have mem1 : ∀ m, m ∈ supr 𝓜' :=
-      λ m, (direct_sum.is_internal.add_submonoid_supr_eq_top 𝓜'
-        (direct_sum.decomposition.is_internal 𝓜')).symm ▸ trivial,
-
-    let 𝓐' : ι → add_submonoid A :=
-      λ i, (⟨𝓐 i, λ _ _, add_mem_class.add_mem, zero_mem_class.zero_mem _⟩ : add_submonoid A),
-    haveI t : direct_sum.decomposition 𝓐' :=
-    { decompose' := direct_sum.decompose 𝓐,
-      left_inv := λ _, (direct_sum.decompose 𝓐).left_inv _,
-      right_inv := λ _, (direct_sum.decompose 𝓐).right_inv _, },
-    have mem2 : ∀ m, m ∈ supr 𝓐' :=
-      λ m, (direct_sum.is_internal.add_submonoid_supr_eq_top 𝓐'
-        (direct_sum.decomposition.is_internal 𝓐')).symm ▸ trivial,
-    refine add_submonoid.supr_induction 𝓐' (mem2 x) _ _ _,
-    { intros i a ha,
-      rw [direct_sum.decompose_add_equiv_apply],
-      refine add_submonoid.supr_induction 𝓜' (mem1 y) _ _ _,
-      { intros j m hm,
-        lift a to (𝓐 i) using ha,
-        lift m to (𝓜 j) using hm,
-        change _ = direct_sum.decompose _ _ • _,
-        rw [direct_sum.decompose_coe, direct_sum.decompose_coe, gmodule.of_smul_of,
-          show (a : A) • (m : M) = (↑(⟨(a : A) • (m : M),
-            set_like.has_graded_smul.smul_mem a.2 m.2⟩ : 𝓜 (i + j)) : M), from rfl,
-          direct_sum.decompose_coe],
-        exact direct_sum.of_eq_of_graded_monoid_eq rfl, },
-      { rw [smul_zero, direct_sum.decompose_zero, smul_zero], },
-      { intros m₁ m₂ ih₁ ih₂,
-        simp only [smul_add, direct_sum.decompose_add, ih₁, ih₂], }, },
-    { simp only [zero_smul, map_zero] },
-    { intros a₁ a₂ ih₁ ih₂,
-      simp only [add_smul, ih₁, ih₂, map_add], },
+    classical,
+    rw [← direct_sum.sum_support_decompose 𝓐 x, map_sum, finset.sum_smul, map_sum,
+      finset.sum_smul, finset.sum_congr rfl (λ i hi, _)],
+    rw [ring_hom.id_apply, ← direct_sum.sum_support_decompose 𝓜 y, map_sum, finset.smul_sum,
+      map_sum, finset.smul_sum, finset.sum_congr rfl (λ j hj, _)],
+    unfold has_smul.smul,
+    simp only [direct_sum.decompose_add_equiv_apply, direct_sum.decompose_coe,
+      gmodule.smul_add_monoid_hom_apply_of_of],
+    convert direct_sum.decompose_coe 𝓜 _,
+    refl,
   end,
-  inv_fun := (direct_sum.decompose_add_equiv 𝓜).symm,
-  left_inv := add_equiv.apply_symm_apply _,
-  right_inv := add_equiv.symm_apply_apply _ }
+  .. (direct_sum.decompose_add_equiv 𝓜) }
 
 end graded_module
 
