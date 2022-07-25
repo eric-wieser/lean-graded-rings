@@ -54,7 +54,7 @@ begin
     exact submodule.mem_sup_right (mem_with_sign_neg_one.mpr hn), }
 end
 
-def with_sign.independent : complete_lattice.independent with_sign :=
+lemma with_sign.independent : complete_lattice.independent with_sign :=
 begin
   refine (complete_lattice.independent_pair units_int.one_ne_neg_one _).mpr
     with_sign.is_compl.disjoint,
@@ -93,3 +93,11 @@ end
 /-- And so they do not represent an internal direct sum. -/
 lemma with_sign.not_internal : ¬direct_sum.is_internal with_sign :=
 with_sign.not_injective ∘ and.elim_left
+
+/-- And therefore the characterization via `supr` and `complete_lattice.independent` is not
+strong enough to define `is_internal` -/
+lemma direct_sum.is_internal_contradiction :
+  ¬∀ {R A ι : Type} [decidable_eq ι] [semiring R] [add_comm_monoid A],
+    by exactI ∀ [module R A], by exactI ∀ (S : ι → submodule R A),
+      supr S = ⊤ ∧ complete_lattice.independent S → direct_sum.is_internal S :=
+λ h, with_sign.not_internal (h with_sign ⟨with_sign.supr, with_sign.independent⟩)
