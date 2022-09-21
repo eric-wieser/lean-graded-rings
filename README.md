@@ -20,7 +20,7 @@ This repository contains a `.gitpod.yml` file which allows it be explored with a
 
 Note: If you arrived here by following a permalink in our paper and the top of the page does not indicate you are looking at the "master" branch, you will be looking at precisely the version that was submitted for publication. See the master branch for any corrections or information on how to cite this work.
 
-[Slides](https://github.com/eric-wieser/cicm-2022)
+[Slides](https://eric-wieser.github.io/cicm-2022)
 
 ## Contributors
 
